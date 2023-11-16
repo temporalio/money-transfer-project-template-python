@@ -7,11 +7,11 @@ you to experiment with failures and timeouts.
 """
 
 import random
-
 from typing import List
 
+
 class InsufficientFundsError(Exception):
-    """ Exception for handling insufficient funds.
+    """Exception for handling insufficient funds.
 
     Attributes:
         message (str): The message to display.
@@ -20,12 +20,14 @@ class InsufficientFundsError(Exception):
         message (str): The message to display.
 
     """
+
     def __init__(self, message) -> None:
         self.message: str = message
         super().__init__(self.message)
+
 
 class InvalidAccountError(Exception):
-    """ Exception for invalid account numbers.
+    """Exception for invalid account numbers.
 
     Attributes:
         message (str): The message to display.
@@ -34,9 +36,11 @@ class InvalidAccountError(Exception):
         message (str): The message to display.
 
     """
+
     def __init__(self, message) -> None:
         self.message: str = message
         super().__init__(self.message)
+
 
 class Account:
     """A class representing a bank account.
@@ -49,9 +53,11 @@ class Account:
         account_number (str): The account number for the account.
         balance (int): The balance of the account.
     """
+
     def __init__(self, account_number: str, balance: int) -> None:
         self.account_number: str = account_number
         self.balance: int = balance
+
 
 class Bank:
     """
@@ -62,6 +68,7 @@ class Bank:
     Attributes:
         accounts: A list of Account objects representing the bank's accounts.
     """
+
     def __init__(self, accounts: List[Account]) -> None:
         self.accounts: List[Account] = accounts
 
@@ -84,6 +91,7 @@ class Bank:
                 return account
         raise InvalidAccountError(f"The account number {account_number} is invalid.")
 
+
 class BankingService:
     """
     A mock implementation of a banking API.
@@ -94,6 +102,7 @@ class BankingService:
     Attributes:
         hostname: The hostname of the banking API service.
     """
+
     def __init__(self, hostname: str) -> None:
         """
         Constructs a new BankingService object with the given hostname.
@@ -101,12 +110,14 @@ class BankingService:
         Args:
             hostname: The hostname of the banking API service.
         """
-        self.hostname: str= hostname
+        self.hostname: str = hostname
 
-        self.mock_bank: Bank = Bank([
-            Account("85-150", 2000),
-            Account("43-812", 0),
-        ])
+        self.mock_bank: Bank = Bank(
+            [
+                Account("85-150", 2000),
+                Account("43-812", 0),
+            ]
+        )
 
     def withdraw(self, account_number: str, amount: int, reference_id: str) -> str:
         """
@@ -133,7 +144,9 @@ class BankingService:
             raise account_error
 
         if amount > account.balance:
-            raise InsufficientFundsError(f"The account {account_number} has insufficient funds to complete this transaction.")
+            raise InsufficientFundsError(
+                f"The account {account_number} has insufficient funds to complete this transaction."
+            )
 
         return self.generate_transaction_id("W", 10)
 
@@ -159,7 +172,9 @@ class BankingService:
 
         return self.generate_transaction_id("D", 10)
 
-    def deposit_that_fails(self, account_number: str, amount: int, reference_id: str) -> str:
+    def deposit_that_fails(
+        self, account_number: str, amount: int, reference_id: str
+    ) -> str:
         """
         Simulates a deposit to a bank account that always fails with an
         unknown error.
@@ -186,9 +201,9 @@ class BankingService:
             length (int): the length of the ID to generate.
 
         Returns:
-            the transacction id (str)
+            the transaction id (str)
 
         """
-        allowed_chars :str = "0123456789"
+        allowed_chars: str = "0123456789"
         rand_chars: list[str] = [random.choice(allowed_chars) for _ in range(length)]
         return prefix + "".join(rand_chars)
