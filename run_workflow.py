@@ -1,5 +1,6 @@
 # @@@SNIPSTART python-project-template-run-workflow
 import asyncio
+import traceback
 
 from temporalio.client import Client, WorkflowFailureError
 
@@ -27,12 +28,9 @@ async def main() -> None:
         )
 
         print(f"Result: {result}")
-        return result
 
-    except WorkflowFailureError as err:
-        activity_error = err.cause
-        error = activity_error.cause
-        print(f"Unable to transfer money.{error}")
+    except WorkflowFailureError:
+        print("Got expected exception: ", traceback.format_exc())
 
 
 if __name__ == "__main__":

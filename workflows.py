@@ -3,10 +3,10 @@ from datetime import timedelta
 
 from temporalio import workflow
 from temporalio.common import RetryPolicy
-from temporalio.exceptions import ApplicationError
+from temporalio.exceptions import ActivityError
 
 with workflow.unsafe.imports_passed_through():
-    from activities import deposit, refund, withdraw
+    from activities import BankingActivities
     from shared import PaymentDetails
 
 
@@ -14,6 +14,7 @@ with workflow.unsafe.imports_passed_through():
 class MoneyTransfer:
     @workflow.run
     async def run(self, payment_details: PaymentDetails) -> str:
+        activities = BankingActivities()
         retry_policy = RetryPolicy(
             maximum_attempts=3,
             maximum_interval=timedelta(seconds=2),
@@ -22,7 +23,7 @@ class MoneyTransfer:
 
         # Withdraw money
         withdraw_output = await workflow.execute_activity(
-            withdraw,
+            activities.withdraw,
             payment_details,
             start_to_close_timeout=timedelta(seconds=5),
             retry_policy=retry_policy,
@@ -31,18 +32,18 @@ class MoneyTransfer:
         # Deposit money
         try:
             deposit_output = await workflow.execute_activity(
-                deposit,
+                activities.deposit,
                 payment_details,
                 start_to_close_timeout=timedelta(seconds=5),
                 retry_policy=retry_policy,
             )
-        except ApplicationError as deposit_err:
+        except ActivityError as deposit_err:
             # Handle deposit error
             workflow.logger.error(f"Deposit failed: {deposit_err}")
             # Attempt to refund
             try:
                 refund_output = await workflow.execute_activity(
-                    refund,
+                    activities.refund,
                     payment_details,
                     start_to_close_timeout=timedelta(seconds=5),
                     retry_policy=retry_policy,
@@ -51,7 +52,7 @@ class MoneyTransfer:
                     f"Refund successful. Confirmation ID: {refund_output}"
                 )
                 raise deposit_err
-            except ApplicationError as refund_error:
+            except ActivityError as refund_error:
                 workflow.logger.error(f"Refund failed: {refund_error}")
                 raise refund_error
 

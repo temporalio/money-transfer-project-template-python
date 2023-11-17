@@ -1,23 +1,23 @@
 """ This code simulates a client for a hypothetical banking service.
-It supports both withdrawals and deposits, and generates a
-pseudorandom transaction ID for each request.
+It supports both withdrawals and deposits, and generates a random transaction ID for each request.
 
 Tip: You can modify these functions to introduce delays or errors, allowing
 you to experiment with failures and timeouts.
 """
+import uuid
+from dataclasses import dataclass
+from typing import NoReturn
 
-import random
-from typing import List
 
-
+@dataclass
 class InsufficientFundsError(Exception):
     """Exception for handling insufficient funds.
 
     Attributes:
-        message (str): The message to display.
+        message: The message to display.
 
     Args:
-        message (str): The message to display.
+        message: The message to display.
 
     """
 
@@ -26,14 +26,15 @@ class InsufficientFundsError(Exception):
         super().__init__(self.message)
 
 
+@dataclass
 class InvalidAccountError(Exception):
     """Exception for invalid account numbers.
 
     Attributes:
-        message (str): The message to display.
+        message: The message to display.
 
     Args:
-        message (str): The message to display.
+        message: The message to display.
 
     """
 
@@ -42,16 +43,17 @@ class InvalidAccountError(Exception):
         super().__init__(self.message)
 
 
+@dataclass
 class Account:
     """A class representing a bank account.
 
     Attributes:
-        account_number (str): The account number for the account.
-        balance (int): The balance of the account.
+        account_number: The account number for the account.
+        balance: The balance of the account.
 
     Args:
-        account_number (str): The account number for the account.
-        balance (int): The balance of the account.
+        account_number: The account number for the account.
+        balance: The balance of the account.
     """
 
     def __init__(self, account_number: str, balance: int) -> None:
@@ -59,6 +61,7 @@ class Account:
         self.balance: int = balance
 
 
+@dataclass
 class Bank:
     """
     A Bank with a list of accounts.
@@ -69,8 +72,8 @@ class Bank:
         accounts: A list of Account objects representing the bank's accounts.
     """
 
-    def __init__(self, accounts: List[Account]) -> None:
-        self.accounts: List[Account] = accounts
+    def __init__(self, accounts: list[Account]) -> None:
+        self.accounts: list[Account] = accounts
 
     def find_account(self, account_number: str) -> Account:
         """
@@ -84,7 +87,7 @@ class Bank:
 
         Raises:
             ValueError: If no account with the given account number is
-            found in the bank's accounts list.
+                found in the bank's accounts list.
         """
         for account in self.accounts:
             if account.account_number == account_number:
@@ -92,6 +95,7 @@ class Bank:
         raise InvalidAccountError(f"The account number {account_number} is invalid.")
 
 
+@dataclass
 class BankingService:
     """
     A mock implementation of a banking API.
@@ -124,57 +128,53 @@ class BankingService:
         Simulates a withdrawal from a bank account.
 
         Args:
-            account_number (str): The account number to deposit to.
-            amount (int): The amount to deposit to the account.
-            reference_id (str): An identifier for the transaction, used for idempotency.
+            account_number: The account number to deposit to.
+            amount: The amount to deposit to the account.
+            reference_id: An identifier for the transaction, used for idempotency.
 
         Returns:
-            A transaction ID (str)
+            A transaction ID
 
         Raises:
             InvalidAccountError: If the account number is invalid.
             InsufficientFundsError: If the account does not have enough funds
-            to complete the withdrawal.
+                to complete the withdrawal.
         """
 
-        try:
-            account: Account = self.mock_bank.find_account(account_number)
-
-        except InvalidAccountError as account_error:
-            raise account_error
+        account = self.mock_bank.find_account(account_number)
 
         if amount > account.balance:
             raise InsufficientFundsError(
                 f"The account {account_number} has insufficient funds to complete this transaction."
             )
 
-        return self.generate_transaction_id("W", 10)
+        return self.generate_transaction_id("W")
 
     def deposit(self, account_number: str, amount: int, reference_id: str) -> str:
         """
         Simulates a deposit to a bank account.
 
         Args:
-            account_number (str): The account number to deposit to.
-            amount (int): The amount to deposit to the account.
-            reference_id (str): An identifier for the transaction, used for idempotency.
+            account_number: The account number to deposit to.
+            amount: The amount to deposit to the account.
+            reference_id: An identifier for the transaction, used for idempotency.
 
         Returns:
-            A transaction ID (str)
+            A transaction ID.
 
         Raises:
             InvalidAccountError: If the account number is invalid.
         """
         try:
             self.mock_bank.find_account(account_number)
-        except InvalidAccountError as error:
-            raise error
+        except InvalidAccountError:
+            raise
 
-        return self.generate_transaction_id("D", 10)
+        return self.generate_transaction_id("D")
 
     def deposit_that_fails(
         self, account_number: str, amount: int, reference_id: str
-    ) -> str:
+    ) -> NoReturn:
         """
         Simulates a deposit to a bank account that always fails with an
         unknown error.
@@ -185,25 +185,20 @@ class BankingService:
             reference_id: An identifier for the transaction, used for idempotency.
 
         Returns:
-            an empty string
+            An empty string.
 
         Raises:
-            a ValueError exception object.
+            A ValueError exception object.
         """
         raise ValueError("This deposit has failed.")
 
-    def generate_transaction_id(self, prefix: str, length: int) -> str:
+    def generate_transaction_id(self, prefix: str) -> str:
         """
         Generates a transaction ID we can send back.
 
         Args:
-            prefix (str): a prefix so you can identify the type of transaction.
-            length (int): the length of the ID to generate.
-
+            prefix: A prefix so you can identify the type of transaction.
         Returns:
-            the transaction id (str)
-
+            The transaction id.
         """
-        allowed_chars: str = "0123456789"
-        rand_chars: list[str] = [random.choice(allowed_chars) for _ in range(length)]
-        return prefix + "".join(rand_chars)
+        return f"{prefix}-{uuid.uuid4()}"
