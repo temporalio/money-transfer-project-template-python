@@ -31,7 +31,6 @@ class BankingActivities:
     async def deposit(self, data: PaymentDetails) -> str:
         reference_id = f"{data.reference_id}-deposit"
         try:
-            """
             confirmation = await asyncio.to_thread(
                 self.bank.deposit, data.target_account, data.amount, reference_id
             )
@@ -42,7 +41,7 @@ class BankingActivities:
                 data.amount,
                 reference_id,
             )
-
+            """
             return confirmation
         except InvalidAccountError:
             raise
