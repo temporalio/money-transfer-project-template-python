@@ -14,7 +14,6 @@ with workflow.unsafe.imports_passed_through():
 class MoneyTransfer:
     @workflow.run
     async def run(self, payment_details: PaymentDetails) -> str:
-        activities = BankingActivities()
         retry_policy = RetryPolicy(
             maximum_attempts=3,
             maximum_interval=timedelta(seconds=2),
@@ -22,8 +21,8 @@ class MoneyTransfer:
         )
 
         # Withdraw money
-        withdraw_output = await workflow.execute_activity(
-            activities.withdraw,
+        withdraw_output = await workflow.execute_activity_method(
+            BankingActivities.withdraw,
             payment_details,
             start_to_close_timeout=timedelta(seconds=5),
             retry_policy=retry_policy,
@@ -31,19 +30,22 @@ class MoneyTransfer:
 
         # Deposit money
         try:
-            deposit_output = await workflow.execute_activity(
-                activities.deposit,
+            deposit_output = await workflow.execute_activity_method(
+                BankingActivities.deposit,
                 payment_details,
                 start_to_close_timeout=timedelta(seconds=5),
                 retry_policy=retry_policy,
             )
+
+            result = f"Transfer complete (transaction IDs: {withdraw_output}, {deposit_output})"
+            return result
         except ActivityError as deposit_err:
             # Handle deposit error
             workflow.logger.error(f"Deposit failed: {deposit_err}")
             # Attempt to refund
             try:
-                refund_output = await workflow.execute_activity(
-                    activities.refund,
+                refund_output = await workflow.execute_activity_method(
+                    BankingActivities.refund,
                     payment_details,
                     start_to_close_timeout=timedelta(seconds=5),
                     retry_policy=retry_policy,
@@ -55,11 +57,6 @@ class MoneyTransfer:
             except ActivityError as refund_error:
                 workflow.logger.error(f"Refund failed: {refund_error}")
                 raise refund_error
-
-        result = (
-            f"Transfer complete (transaction IDs: {withdraw_output}, {deposit_output})"
-        )
-        return result
 
 
 # @@@SNIPEND

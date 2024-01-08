@@ -21,9 +21,9 @@ class BankingActivities:
             return confirmation
         except InvalidAccountError:
             raise
-        except Exception as error:
+        except Exception:
             activity.logger.exception("Withdrawal failed")
-            raise error
+            raise
 
     # @@@SNIPEND
     # @@@SNIPSTART python-money-transfer-project-template-deposit
@@ -45,9 +45,9 @@ class BankingActivities:
             return confirmation
         except InvalidAccountError:
             raise
-        except Exception as error:
+        except Exception:
             activity.logger.exception("Deposit failed")
-            raise error
+            raise
 
     # @@@SNIPEND
 
@@ -62,8 +62,8 @@ class BankingActivities:
             return confirmation
         except InvalidAccountError:
             raise
-        except Exception as error:
+        except Exception:
             activity.logger.exception("Refund failed")
-            raise error
+            raise
 
     # @@@SNIPEND
