@@ -1,4 +1,4 @@
-# @@@SNIPSTART hello-world-project-template-python-tests
+# @@@SNIPSTART money-transfer-project-template-python-tests
 import uuid
 
 import pytest
