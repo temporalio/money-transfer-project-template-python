@@ -1,8 +1,8 @@
-# @@@SNIPSTART python-money-transfer-project-template-import-os
 import asyncio
-# @@@SNIPEND
-import os
 
+# @@@SNIPSTART python-money-transfer-project-template-import-os
+import os
+# @@@SNIPEND
 # @@@SNIPSTART python-money-transfer-project-template-import-tls
 from temporalio.client import Client, TLSConfig
 # @@@SNIPEND
@@ -43,4 +43,3 @@ async def main() -> None:
 
 if __name__ == "__main__":
     asyncio.run(main())
-
