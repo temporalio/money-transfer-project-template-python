@@ -1,4 +1,3 @@
-# @@@SNIPSTART python-money-transfer-project-template-workflows
 from datetime import timedelta
 
 from temporalio import workflow
@@ -57,6 +56,3 @@ class MoneyTransfer:
             except ActivityError as refund_error:
                 workflow.logger.error(f"Refund failed: {refund_error}")
                 raise refund_error
-
-
-# @@@SNIPEND

@@ -1,4 +1,3 @@
-# @@@SNIPSTART python-money-transfer-project-template-withdraw
 import asyncio
 
 from temporalio import activity
@@ -25,8 +24,6 @@ class BankingActivities:
             activity.logger.exception("Withdrawal failed")
             raise
 
-    # @@@SNIPEND
-    # @@@SNIPSTART python-money-transfer-project-template-deposit
     @activity.defn
     async def deposit(self, data: PaymentDetails) -> str:
         reference_id = f"{data.reference_id}-deposit"
@@ -49,9 +46,6 @@ class BankingActivities:
             activity.logger.exception("Deposit failed")
             raise
 
-    # @@@SNIPEND
-
-    # @@@SNIPSTART python-money-transfer-project-template-refund
     @activity.defn
     async def refund(self, data: PaymentDetails) -> str:
         reference_id = f"{data.reference_id}-refund"
@@ -66,4 +60,3 @@ class BankingActivities:
             activity.logger.exception("Refund failed")
             raise
 
-    # @@@SNIPEND

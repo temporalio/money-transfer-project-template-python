@@ -1,4 +1,3 @@
-# @@@SNIPSTART python-project-template-run-workflow
 import asyncio
 import traceback
 
@@ -35,4 +34,3 @@ async def main() -> None:
 
 if __name__ == "__main__":
     asyncio.run(main())
-# @@@SNIPEND
