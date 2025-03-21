@@ -11,7 +11,6 @@ from workflows import MoneyTransfer
 
 
 async def main() -> None:
-    #client: Client = await Client.connect("localhost:7233", namespace="default")
     client = await get_temporal_client()
     # Run the worker
     activities = BankingActivities()
