@@ -53,10 +53,12 @@ class MoneyTransfer:
                 workflow.logger.info(
                     f"Refund successful. Confirmation ID: {refund_output}"
                 )
-                raise deposit_err
             except ActivityError as refund_error:
                 workflow.logger.error(f"Refund failed: {refund_error}")
-                raise refund_error
+                raise refund_error from deposit_err
+
+            # Re-raise deposit error if refund was successful
+            raise deposit_err
 
 
 # @@@SNIPEND
