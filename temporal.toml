@@ -1,0 +1,8 @@
+[profile.default]
+address = "localhost:7233"
+namespace = "default"
+
+[profile.prod]
+address = "quickstart-lennessy.a2dd6.tmprl.cloud:7233"
+namespace = "quickstart-lennessy.a2dd6"
+api_key = "***"
