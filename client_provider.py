@@ -1,34 +1,18 @@
 import os
 from temporalio.client import Client, TLSConfig
+from temporalio.envconfig import ClientConfig
+
 
 async def get_temporal_client() -> Client:
-    cert_path = os.getenv("TEMPORAL_TLS_CERT")
-    key_path = os.getenv("TEMPORAL_TLS_KEY")
-    api_key = os.getenv("TEMPORAL_API_KEY")
-
-    # Check for mTLS authentication
-    if cert_path and key_path:
-        with open(cert_path, "rb") as f:
-            client_cert = f.read()
-        with open(key_path, "rb") as f:
-            client_key = f.read()
-
-        return await Client.connect(
-            os.getenv("TEMPORAL_ADDRESS"),
-            namespace=os.getenv("TEMPORAL_NAMESPACE"),
-            tls=TLSConfig(
-                client_cert=client_cert,
-                client_private_key=client_key,
-            ),
+    config_file_path = os.getenv("TEMPORAL_CONFIG_PATH")
+    profile_name = os.getenv("TEMPORAL_PROFILE_NAME")
+    if config_file_path and profile_name:
+        # DO PROFILE THING
+        connect_config = ClientConfig.load_client_connect_config(
+            profile=profile_name,
+            config_file=config_file_path,
         )
-    elif api_key:
-        return await Client.connect(
-            os.getenv("TEMPORAL_ADDRESS"),
-            namespace=os.getenv("TEMPORAL_NAMESPACE"),
-            api_key=api_key,
-            tls=True,
-        )
-
+        return await Client.connect(**connect_config)
     else:
         return await Client.connect(
             os.getenv("TEMPORAL_ADDRESS", "localhost:7233"),
