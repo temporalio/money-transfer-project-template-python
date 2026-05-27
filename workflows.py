@@ -15,7 +15,6 @@ class MoneyTransfer:
     @workflow.run
     async def run(self, payment_details: PaymentDetails) -> str:
         retry_policy = RetryPolicy(
-            maximum_attempts=3,
             maximum_interval=timedelta(seconds=2),
             non_retryable_error_types=["InvalidAccountError", "InsufficientFundsError"],
         )
