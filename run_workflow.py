@@ -4,13 +4,13 @@ import traceback
 
 from temporalio.client import Client, WorkflowFailureError
 
+from client_provider import get_temporal_client
 from shared import MONEY_TRANSFER_TASK_QUEUE_NAME, PaymentDetails
 from workflows import MoneyTransfer
 
 
 async def main() -> None:
-    # Create client connected to server at the given address
-    client: Client = await Client.connect("localhost:7233")
+    client = await get_temporal_client()
 
     data: PaymentDetails = PaymentDetails(
         source_account="85-150",
