@@ -2,6 +2,7 @@
 import asyncio
 
 from temporalio.client import Client
+from temporalio.envconfig import ClientConfigProfile
 from temporalio.worker import Worker
 
 from activities import BankingActivities
@@ -10,7 +11,11 @@ from workflows import MoneyTransfer
 
 
 async def main() -> None:
-    client: Client = await Client.connect("localhost:7233", namespace="default")
+    # Connect to Temporal Cloud using the "cloud-setup" profile from the shared
+    # client config file (temporal.toml), which supplies the Cloud address,
+    # namespace, and API key. Run the Temporal Cloud setup to populate it.
+    profile = ClientConfigProfile.load("cloud-setup")
+    client: Client = await Client.connect(**profile.to_client_connect_config())
     # Run the worker
     activities = BankingActivities()
     worker: Worker = Worker(

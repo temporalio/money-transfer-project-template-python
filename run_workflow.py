@@ -3,14 +3,18 @@ import asyncio
 import traceback
 
 from temporalio.client import Client, WorkflowFailureError
+from temporalio.envconfig import ClientConfigProfile
 
 from shared import MONEY_TRANSFER_TASK_QUEUE_NAME, PaymentDetails
 from workflows import MoneyTransfer
 
 
 async def main() -> None:
-    # Create client connected to server at the given address
-    client: Client = await Client.connect("localhost:7233")
+    # Connect to Temporal Cloud using the "cloud-setup" profile from the shared
+    # client config file (temporal.toml), which supplies the Cloud address,
+    # namespace, and API key. Run the Temporal Cloud setup to populate it.
+    profile = ClientConfigProfile.load("cloud-setup")
+    client: Client = await Client.connect(**profile.to_client_connect_config())
 
     data: PaymentDetails = PaymentDetails(
         source_account="85-150",
