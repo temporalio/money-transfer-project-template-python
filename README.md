@@ -29,8 +29,18 @@ env\Scripts\activate
 With the virtual environment configured, install the Temporal SDK:
 
 ```
-python -m pip install temporalio
+python -m pip install "temporalio>=1.18.1"
 ```
+
+## Configure the Temporal Client
+
+By default, this template connects to a local Temporal server at
+`localhost:7233` in the `default` namespace. To connect elsewhere, configure
+the Temporal SDK with a `temporal.toml` profile or the supported environment
+variables. See the [SDK environment configuration API](https://python.temporal.io/temporalio.envconfig.ClientConfig.html) for available settings, including Temporal Cloud API keys.
+
+When `TEMPORAL_PROFILE` is unset, the SDK uses `profile.default` from the
+configuration file when present. An explicitly named profile must exist.
 
 
 Run the workflow:
