@@ -1,5 +1,6 @@
 # @@@SNIPSTART python-project-template-run-workflow
 import asyncio
+import os
 import traceback
 
 from temporalio.client import WorkflowFailureError
@@ -23,7 +24,7 @@ async def main() -> None:
         result = await client.execute_workflow(
             MoneyTransfer.run,
             data,
-            id="pay-invoice-701",
+            id=os.getenv("TEMPORAL_WORKFLOW_ID", "pay-invoice-701"),
             task_queue=MONEY_TRANSFER_TASK_QUEUE_NAME,
         )
 
