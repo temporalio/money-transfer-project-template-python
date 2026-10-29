@@ -34,14 +34,14 @@ class BankingActivities:
             confirmation = await asyncio.to_thread(
                 self.bank.deposit, data.target_account, data.amount, reference_id
             )
-            """
-            confirmation = await asyncio.to_thread(
+            
+            """confirmation = await asyncio.to_thread(
                 self.bank.deposit_that_fails,
                 data.target_account,
                 data.amount,
                 reference_id,
-            )
-            """
+            )"""
+            
             
             # confirmation = self.bank.deposit_that_fails(data.target_account, data.amount, reference_id)
             return confirmation
